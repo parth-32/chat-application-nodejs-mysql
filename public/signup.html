@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<link 
+			rel="stylesheet" 
+			href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+			integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+			crossorigin="anonymous">
+
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+			integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+			crossorigin="anonymous"
+		/>
+		<link rel="stylesheet" href="css/style.css" />
+		<title>ChatCord App</title>
+	</head>
+	<body>
+		<div class="join-container">
+			<header class="join-header">
+				<div class="row">
+					<div class="col-8">
+						<h1><i class="fas fa-smile"></i> ChatCord</h1>
+					</div>
+					<div class="col-2 ml-2">
+						<a href="index.html" class="btn btn-primary">Join Room</a>
+					</div>
+				</div>
+			</header>
+			<main class="join-main">
+				<p class="error_message" id="error_message"></p>
+				<form action="index.html" id="register_submit">
+					<div class="form-control" style="border:none">
+						<!-- <label for="username">Username</label> -->
+						<input style="border: none"
+							type="text"
+							name="username"
+							id="username"
+							placeholder="Enter username..."
+							required
+						/>
+					</div>
+                    <div class="form-control" style="border:none">
+						<input style="border: none;padding:8px"
+							type="tel"
+							name="phone"
+							id="phone"
+							placeholder="Enter phone number"
+							required
+						/>
+					</div>
+                    <div class="form-control" style="border:none">
+						<input style="border: none;padding:8px"
+							type="password"
+							name="password"
+							id="password"
+							placeholder="Enter Password"
+							required
+						/>
+					</div>
+					<button type="button" class="btn btn-primary" onclick="register()" class="btn">Register</button>
+				</form>
+			</main>
+		</div>
+	</body>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous"></script>
+</html>
+
+<script>
+	function register(){
+		const username = document.getElementById('username').value
+		const phone = document.getElementById('phone').value
+		const password = document.getElementById('password').value
+
+		$.ajax({
+			url : "http://localhost:3000/api/user/register",
+			method : "POST",
+			data : JSON.stringify({
+				"username": username,
+				"phone": phone,
+                "password" : password
+			}),
+			contentType: "application/json",
+			success : function(response) {
+				if(response.success == 1) {
+					// document.getElementById('register_submit').submit()
+					window.location.href = "index.html"
+				}else{
+					document.getElementById('error_message').innerHTML = response.message
+				}
+			}
+		})
+	}
+</script>
+
