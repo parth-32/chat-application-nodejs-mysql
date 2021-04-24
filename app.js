@@ -3,7 +3,7 @@ const http = require('http')
 const bodyParser = require('body-parser')
 const socketio = require('socket.io')
 const msgFormat = require('./utils/message')
-const { userJoin, getCurrentUser, leaveRoom, roomUser,getUserDetailByName } = require('./utils/user')
+const { userJoin, get_room_by_uid, leaveRoom, roomUser,getUserDetailByName,delete_Msg_db } = require('./utils/user')
 const app = express()
 const port = 3000
 const server = http.createServer(app)
@@ -17,8 +17,17 @@ app.get('/fetch_allMsg', (req, res) =>{
     pool.query('CALL fetch_allMsg()', (err, rows) => {
         if (err) { 
             console.log(err) 
-        }else{ 
-            res.end(JSON.stringify(rows[0])) 
+        }else{
+            const msg = rows[0]
+            pool.query('CALL fetch_date_vise()',(err, rows)=>{
+                if(err) {
+                    console.log(err)
+                }else{
+                    const data = {date:rows[0], msg}
+                    res.end(JSON.stringify(data))
+                }
+            }) 
+             
         }
     })
 })
@@ -34,9 +43,9 @@ io.on('connection', socket=>{
         // console.log("userJoin : ", user)
         socket.join(user.room)
         //for single user
-        socket.emit('message' , await msgFormat('boat','<center><b>Welcome to chat</b></center>'))
+        socket.emit('message' , await msgFormat('boat','<center>Welcome to chat</center>'))
         //for all except self
-        socket.broadcast.to(user.room).emit('message' ,await msgFormat('boat', `<center><b>${user.username} has joined</b></center>`))
+        socket.broadcast.to(user.room).emit('message' ,await msgFormat('boat', `<center>${user.username} has joined</center>`))
 
         io.to(user.room).emit('roomUser', {
             room : user.room,
@@ -44,6 +53,20 @@ io.on('connection', socket=>{
         })
     })
 
+    socket.on('delete', async (id) => {
+        // console.log("dellete",id)
+        try{
+            // const room = await get_room_by_uid(id)
+            // console.log(room[0].room)
+            socket.emit('delete_msg',{ message:"message was deleted",id:id})
+            socket.broadcast.emit('delete_msg',{ message:"message was deleted",id:id})
+
+            const del = await delete_Msg_db(id)
+            // console.log(del)
+        }catch(e){
+            console.log(new Date().toString()," : ",e)
+        }
+    })
     //listen chatMessage event
     socket.on('chatMessage', async (msg)=>{
         // console.log("msg : ",msg)
@@ -51,12 +74,16 @@ io.on('connection', socket=>{
         user = user[0]
         // console.log("user : ",user)
         try{
-            const formatted = await msgFormat(user.username, msg.sanitizeMsg)
+            var formatted = await msgFormat(user.username, msg.sanitizeMsg)
             
-            io.to(user.room).emit('message',formatted)
-
             await pool.query('CALL insert_msg(?,?,?,?)',[formatted.username, user.room, formatted.text, formatted.time],(err, rows) =>{
-                if(err) console.log(err)
+                if(err) {console.log(err)}
+                else{
+                    const last_id = rows[0][0].lid
+                    formatted['last_id'] = last_id
+                    // console.log(formatted)
+                    io.to(user.room).emit('message',formatted)
+                }
             })
         }catch(e){
             console.log(new Date().toString()," : ",e)
@@ -73,7 +100,7 @@ io.on('connection', socket=>{
             const leave = await leaveRoom(u_name)
             // console.log("leave", leave.data[0].room)
             if(leave){
-                io.to(leave.data[0].room).emit('message', await msgFormat('boat',`<center><b>${leave.data[0].username} has left the room</b></center>`))
+                io.to(leave.data[0].room).emit('message', await msgFormat('boat',`<center>${leave.data[0].username} has left the room</center>`))
 
                 io.to(leave.data[0].room).emit('roomUser', {
                     room : leave.data[0].room,

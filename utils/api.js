@@ -18,6 +18,18 @@ router.post('/user', async (req, res) => {
     }
 })
 
+router.get('/user/:del_id', async (req, res) => {
+    try{    
+        //console.log(req.body)
+        const results = await deleteMsg(req.params.del_id)
+        console.log(results[0])
+        return res.json({success:1, message:"Message Deleted Successfully"})
+        
+    }catch(e){
+        return res.json({error : e.message, stack : e.stack})
+    }
+})
+
 router.post('/user/register', async (req, res)=>{
     try{
         const results = await registerUser(req.body)
@@ -37,6 +49,18 @@ router.post('/user/register', async (req, res)=>{
 function checkUser(data){
     return new Promise((resolve, reject) =>{
         pool.query('CALL checkUser(?,?)', [data.username, data.room], (err, rows) =>{
+            if(err){
+                return reject(err)
+            }else{
+                return resolve(rows)
+            }
+        })
+    })
+}
+
+function deleteMsg(id){
+    return new Promise((resolve, reject) =>{
+        pool.query('CALL deleteMsg(?)', [id], (err, rows) =>{
             if(err){
                 return reject(err)
             }else{

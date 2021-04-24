@@ -27,6 +27,29 @@ function getUserDetailByName(name){
     })
 }
 
+function delete_Msg_db(id){
+    return new Promise((resolve, reject) =>{
+        pool.query('CALL deleteMsg(?)', [id], (err, rows) =>{
+            if(err){
+                return reject(err)
+            }else{
+                return resolve(rows)
+            }
+        })
+    })
+}
+function get_room_by_uid(id){
+    return new Promise((resolve, reject) =>{
+        pool.query('CALL get_room_by_uid(?)',[id],(err, rows)=>{
+            if(err){
+                return reject(err)
+            }else{
+                // console.log(rows[0][0])
+                return resolve(rows[0])
+            }
+        })
+    })
+}
 function getCurrentUser(id){
     return new Promise((resolve, reject) =>{
         pool.query('CALL getCurrentUser(?)',[id],(err, rows)=>{
@@ -99,4 +122,4 @@ function roomUser(room){
 //     return users.filter(user => user.room == room)
 // }
 
-module.exports = {userJoin, getCurrentUser, leaveRoom, roomUser, getUserDetailByName}
+module.exports = {userJoin, getCurrentUser, leaveRoom, roomUser, getUserDetailByName, delete_Msg_db,get_room_by_uid}
