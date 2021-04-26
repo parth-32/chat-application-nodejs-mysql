@@ -70,6 +70,7 @@ msgForm.addEventListener("keyup", (e) => {
     }
 
     const keyCode = e.which || e.keyCode;
+
     // 13 represents the Enter key
     if (keyCode === 13 && !e.shiftKey) {
         //remove typing msg after enter
@@ -82,6 +83,7 @@ msgForm.addEventListener("keyup", (e) => {
         sendSanitizeMessgae(msg);
     }
 });
+
 msgForm.addEventListener("submit", (e) => {
     e.preventDefault();
     var msg = document.getElementById("msg").value;
@@ -270,53 +272,3 @@ function outputUser(user) {
         })
         .join("");
 }
-
-// $.ajax({
-//     url : "http://localhost:3000/fetch_allMsg",
-//     method : "GET",
-//     success : function(msg) {
-//         var data = JSON.parse(msg)
-//         //console.log(data)
-
-//         for(var a=0; a < data.length; a++) {
-//             if(data[i].room == room) {
-//                 //console.log(data[a].user_name)
-//                 const mainDiv = document.createElement(`div`)
-//                 const msgData = sanitize(data[a].message)
-//                 //mainDiv.classList.add('message')
-//                 if(data[a].user_name == username[0].toUpperCase() + username.slice(1)){
-//                     mainDiv.classList.add('message_send')
-//                     if(data[a].status == 1){
-//                         mainDiv.innerHTML = `
-//                             <p class="meta" >You <span> ${data[a].date}</span></p>
-//                             <div id="${data[a].id}">
-//                                 <p class="text" >${msgData}</p>
-//                                 <p class="action" ><button class="btn1" onClick="deleteMsg(${data[a].id})">delete</button></p>
-//                             </div>
-//                             `
-//                     }else{
-//                         mainDiv.innerHTML = `
-//                             <p class="meta" >You <span> ${data[a].date}</span></p>
-//                             <p class="text" style="color:gray;" id="${data[a].id}"><i>${msgData}</i></p>
-//                         `
-//                     }
-//                     document.querySelector('.chat-messages').appendChild(mainDiv)
-//                 }else{
-//                     mainDiv.classList.add('message_received')
-//                     if(data[a].status == 1){
-//                         mainDiv.innerHTML = `
-//                             <p class="meta" >${data[a].user_name} <span> ${data[a].date}</span></p>
-//                             <p class="text" id="${data[a].id}">${msgData}</p>
-//                         `
-//                     }else{
-//                         mainDiv.innerHTML = `
-//                             <p class="meta" > ${data[a].user_name} <span> ${data[a].date}</span></p>
-//                             <p class="text" style="color:gray;" id="${data[a].id}"><i>${msgData}</i></p>
-//                         `
-//                     }
-//                     document.querySelector('.chat-messages').appendChild(mainDiv)
-//                 }
-//             }
-//         }
-//     }
-// })
