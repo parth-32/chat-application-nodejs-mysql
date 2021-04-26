@@ -134,50 +134,83 @@ $.ajax({
     url : "http://localhost:3000/fetch_allMsg",
     method : "GET",
     success : function(msg) {
-        var data = JSON.parse(msg)
-        data = data.msg
-                
-        for(var a=0; a < data.length; a++) {
-            if(data[a].room == room) {
-                //console.log(data[a].user_name)
-                const mainDiv = document.createElement(`div`)
-                const msgData = sanitize(data[a].message)
-                //mainDiv.classList.add('message')
+        var DATE_DATA = JSON.parse(msg)
+        console.log(DATE_DATA)
+        //data = data.msg
+        const result = DATE_DATA.date.map((x) => {
+
+            let rawData = DATE_DATA.msg.filter((y) => {
             
-                if(data[a].user_name == username[0].toUpperCase() + username.slice(1)){
-                    mainDiv.classList.add('message_send')
-                    if(data[a].status == 1){
-                        mainDiv.innerHTML = `
-                            <p class="meta" >You <span> ${data[a].date}</span></p>
-                            <div id="${data[a].id}">
-                                <p class="text" >${msgData}</p>
-                                <p class="action" ><button class="btn1" onClick="deleteMsg(${data[a].id})">delete</button></p>
-                            </div>
+                if(x.total == y.total){
+                    return true
+                }
+                else{
+                    return false
+                }
+            })
+            
+            let obj = {[x.total] : rawData}
+            return obj
+            })
+            
+        // console.log(result)  
+        
+        for(var a=0; a < result.length; a++){
+            const mainDiv = document.createElement('div')
+            mainDiv.classList.add('message_boat')
+            var date_format = new Date(Object.keys(result[a]))
+            
+            mainDiv.innerHTML = `
+                <p class="text" style="font-weight:normal"><center>${date_format.toDateString()}</center></p>
+            `
+            document.querySelector('.chat-messages').appendChild(mainDiv)
+            // console.log(result[a])
+            for(var i=0; i < Object.values(result[a])[0].length; i++) {
+                let data = Object.values(result[a])[0][i]
+                //  console.log("data",data)
+                if(data.room == room) {
+                    //console.log(data[i].user_name)
+                    const mainDiv = document.createElement(`div`)
+                    const msgData = sanitize(data.message)
+                    //mainDiv.classList.add('message')
+                
+                    if(data.user_name == username[0].toUpperCase() + username.slice(1)){
+                        mainDiv.classList.add('message_send')
+                        if(data.status == 1){
+                            mainDiv.innerHTML = `
+                                <p class="meta" >You <span> ${data.date}</span></p>
+                                <div id="${data.id}">
+                                    <p class="text" >${msgData}</p>
+                                    <p class="action" ><button class="btn1" onClick="deleteMsg(${data.id})">delete</button></p>
+                                </div>
+                                `
+                        }else{
+                            mainDiv.innerHTML = `
+                                <p class="meta" >You <span> ${data.date}</span></p>
+                                <p class="text" style="color:gray;" id="${data.id}"><i>${msgData}</i></p>
                             `
+                        }
+                        document.querySelector('.chat-messages').appendChild(mainDiv)
                     }else{
-                        mainDiv.innerHTML = `
-                            <p class="meta" >You <span> ${data[a].date}</span></p>
-                            <p class="text" style="color:gray;" id="${data[a].id}"><i>${msgData}</i></p>
-                        `
+                        mainDiv.classList.add('message_received')
+                        if(data.status == 1){
+                            mainDiv.innerHTML = `
+                                <p class="meta" >${data.user_name} <span> ${data.date}</span></p>
+                                <p class="text" id="${data.id}">${msgData}</p>  
+                            `
+                        }else{
+                            mainDiv.innerHTML = `
+                                <p class="meta" > ${data.user_name} <span> ${data.date}</span></p>
+                                <p class="text" style="color:gray;" id="${data.id}"><i>${msgData}</i></p>
+                            `
+                        }
+                        document.querySelector('.chat-messages').appendChild(mainDiv)
                     }
-                    document.querySelector('.chat-messages').appendChild(mainDiv)
-                }else{
-                    mainDiv.classList.add('message_received')
-                    if(data[a].status == 1){
-                        mainDiv.innerHTML = `
-                            <p class="meta" >${data[a].user_name} <span> ${data[a].date}</span></p>
-                            <p class="text" id="${data[a].id}">${msgData}</p>  
-                        `
-                    }else{
-                        mainDiv.innerHTML = `
-                            <p class="meta" > ${data[a].user_name} <span> ${data[a].date}</span></p>
-                            <p class="text" style="color:gray;" id="${data[a].id}"><i>${msgData}</i></p>
-                        `
-                    }
-                    document.querySelector('.chat-messages').appendChild(mainDiv)
                 }
             }
         }
+
+        
     }
 })
 // ===========================================================================================//
@@ -208,7 +241,7 @@ function outputUser(user){
 //         //console.log(data)
                 
 //         for(var a=0; a < data.length; a++) {
-//             if(data[a].room == room) {
+//             if(data[i].room == room) {
 //                 //console.log(data[a].user_name)
 //                 const mainDiv = document.createElement(`div`)
 //                 const msgData = sanitize(data[a].message)

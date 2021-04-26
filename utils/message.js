@@ -4,7 +4,7 @@ async function formatMessage(username, text){
     return await{
         username,
         text,
-        time : moment().format('DD/MM/YYYY, hh:mm A')
+        time : moment().format('hh:mm A')
     }
 }
 
