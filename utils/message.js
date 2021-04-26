@@ -1,11 +1,11 @@
-const moment = require('moment')
+const moment = require("moment");
 
-async function formatMessage(username, text){
-    return await{
+async function formatMessage(username, text) {
+    return await {
         username,
         text,
-        time : moment().format('hh:mm A')
-    }
+        time: moment().format("hh:mm A"),
+    };
 }
 
-module.exports = formatMessage
+module.exports = formatMessage;

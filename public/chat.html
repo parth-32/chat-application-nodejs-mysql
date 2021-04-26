@@ -12,6 +12,7 @@
   <div class="chat-container">
     <header class="chat-header">
       <h1><i class="fas fa-smile"></i> ChatCord</h1>
+      <p id="typing"></p>
       <a href="index.html" class="btn">Leave Room</a>
     </header>
     <main class="chat-main">
@@ -42,7 +43,9 @@
       </div>
     </main>
     <div class="chat-form-container">
+      
       <form id="chat-form" action="javascript:document.location.reload()">
+        
         <textarea class="form-control" rows="3" cols="90"
           id="msg"
           type="text"
@@ -53,6 +56,7 @@
         ></textarea>
         <button class="btn"><i class="fas fa-paper-plane"></i> Send</button>
       </form>
+      
     </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous"></script>
