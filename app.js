@@ -34,6 +34,7 @@ io.on("connection", (socket) => {
             "message",
             await msgFormat("boat", "<center>Welcome to chat</center>")
         );
+
         //for all except self
         socket.broadcast
             .to(user.room)

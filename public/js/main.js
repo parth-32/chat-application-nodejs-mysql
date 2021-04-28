@@ -36,7 +36,6 @@ socket.on("roomUser", ({ room, users }) => {
 
 //message form server
 socket.on("message", (msg) => {
-    //console.log(msg)
     if (username == msg.username) {
         var msg_data = {
             username: "You",
@@ -56,7 +55,6 @@ socket.on("message", (msg) => {
 
 msgForm.addEventListener("keyup", (e) => {
     e.preventDefault();
-    // console.log("event : ",e)
 
     var msg = document.getElementById("msg").value;
 
@@ -164,6 +162,7 @@ function sendSanitizeMessgae(msg) {
 }
 
 // =================================  broadcast message  ===============================//
+
 function outputMessage(msg) {
     const mainDiv = document.createElement("div");
     if (msg.username == "boat") {

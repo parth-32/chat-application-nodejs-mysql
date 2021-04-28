@@ -25,7 +25,6 @@ function getUserDetailByName(name) {
             if (err) {
                 return reject(err);
             } else {
-                // console.log(rows[0][0])
                 return resolve(rows[0]);
             }
         });
@@ -38,7 +37,6 @@ function delete_Msg_db(id) {
             "UPDATE chat SET message='message was deleted',status=0 WHERE id IN (?)",
             [id],
             (err, rows) => {
-                // pool.query("CALL deleteMsg(?)", [id], (err, rows) => {
                 if (err) {
                     return reject(err);
                 } else {

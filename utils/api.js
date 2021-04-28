@@ -25,7 +25,6 @@ router.get("/fetch_allMsg/:room", (req, res) => {
 
 router.post("/user", async (req, res) => {
     try {
-        //console.log(req.body)
         const results = await checkUser(req.body);
         const err = results[0][0].err;
         const success = results[0][0].success;
@@ -42,7 +41,6 @@ router.post("/user", async (req, res) => {
 
 router.get("/user/:del_id", async (req, res) => {
     try {
-        //console.log(req.body)
         const results = await deleteMsg(req.params.del_id);
         console.log(results[0]);
         return res.json({
