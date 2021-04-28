@@ -43,8 +43,7 @@ socket.on("message", (msg) => {
             time: msg.time,
             text: msg.text,
         };
-        // console.log(msg.username)
-        // console.log(msg_data.username)
+
         outputMessage(msg_data);
     } else {
         outputMessage(msg);
@@ -97,21 +96,52 @@ msgForm.addEventListener("submit", (e) => {
 
     sendSanitizeMessgae(msg);
 });
+// ====================================================================================//
+
+const delete_activity = document.getElementById("deleteBtn");
+if (delete_activity) {
+    delete_activity.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        for (var i = 0; i < ids.length; i++) {
+            var ele = document.getElementById(ids[i]);
+            ele.classList.toggle("selected");
+        }
+
+        socket.emit("delete", ids);
+        document.getElementById("deleteBtn").disabled = true;
+    });
+}
+const ids = [];
+if (ids.length == 0) document.getElementById("deleteBtn").disabled = true;
 
 function deleteMsg(id) {
-    socket.emit("delete", id);
+    ids.indexOf(id) === -1 ? ids.push(id) : ids.splice(ids.indexOf(id), 1);
+    // console.log("ids : ", ids);
+
+    if (ids.length == 0) document.getElementById("deleteBtn").disabled = true;
+    else document.getElementById("deleteBtn").disabled = false;
+
+    var element = document.getElementById(id);
+    element.classList.toggle("selected");
+
+    // socket.emit("delete", ids);
 }
 
 socket.on("delete_msg", async ({ message, id }) => {
-    console.log(id);
-    let div = await document.getElementById(id);
-    if (div) {
-        div.innerHTML =
-            "<p class='text' style='color:gray;'><i>" + message + "</i></p>";
+    //console.log(id);
+    for (var i = 0; i < id.length; i++) {
+        let div = await document.getElementById(id[i]);
+        if (div) {
+            div.innerHTML =
+                "<p class='text' style='color:gray;'><i>" +
+                message +
+                "</i></p>";
+        }
     }
-
     //chatMessage.scrollTop = chatMessage.scrollHeight
 });
+// ====================================================================================//
 
 socket.on("isTyping", async ({ typer, length }) => {
     if (length > 1) {
@@ -124,12 +154,12 @@ socket.on("isTyping", async ({ typer, length }) => {
 function sendSanitizeMessgae(msg) {
     // const sanitizeMsg = sanitize(msg)
     const sanitizeMsg = msg;
-    //emit msg to server
 
+    //emit msg to server
     socket.emit("chatMessage", { sanitizeMsg, username });
 
     //clear input field
-    document.getElementById("msg").value = "";
+    document.getElementById("msg").value = null;
     document.getElementById("msg").focus();
 }
 
@@ -146,9 +176,9 @@ function outputMessage(msg) {
         mainDiv.classList.add("message_send");
         mainDiv.innerHTML = `
 			<p class="meta">You <span>${msg.time}</span></p>
-			<div id="${msg.last_id}">
+			<div lass="myDivs" id="${msg.last_id}" onClick="deleteMsg(${msg.last_id})">
 				<p class="text">${sanitize(msg.text)}</p>
-				<p class="action" ><button class="btn1" onClick="deleteMsg(${
+				<p class="action" hidden ><button class="btn1" onClick="deleteMsg(${
                     msg.last_id
                 })">delete</button></p>
 			</div>
@@ -185,8 +215,6 @@ $.ajax({
             return obj;
         });
 
-        // console.log(result)
-
         for (var a = 0; a < result.length; a++) {
             const mainDiv = document.createElement("div");
             mainDiv.classList.add("message_boat");
@@ -200,51 +228,49 @@ $.ajax({
             for (var i = 0; i < Object.values(result[a])[0].length; i++) {
                 let data = Object.values(result[a])[0][i];
                 //  console.log("data",data)
-                if (data.room == room) {
-                    //console.log(data[i].user_name)
-                    const mainDiv = document.createElement(`div`);
-                    const msgData = sanitize(data.message);
-                    //mainDiv.classList.add('message')
+                //console.log(data[i].user_name)
+                const mainDiv = document.createElement(`div`);
+                const msgData = sanitize(data.message);
+                //mainDiv.classList.add('message')
 
-                    if (
-                        data.user_name ==
-                        username[0].toUpperCase() + username.slice(1)
-                    ) {
-                        mainDiv.classList.add("message_send");
-                        if (data.status == 1) {
-                            mainDiv.innerHTML = `
+                if (
+                    data.user_name ==
+                    username[0].toUpperCase() + username.slice(1)
+                ) {
+                    mainDiv.classList.add("message_send");
+                    if (data.status == 1) {
+                        mainDiv.innerHTML = `
 								<p class="meta" >You <span> ${data.date}</span></p>
-								<div id="${data.id}">
+								<div class="myDivs" id="${data.id}" onClick="deleteMsg(${data.id})">
 									<p class="text" >${msgData}</p>
-									<p class="action" ><button class="btn1" onClick="deleteMsg(${data.id})">delete</button></p>
+									<p class="action" hidden><button class="btn1" onClick="deleteMsg(${data.id})">delete</button></p>
 								</div>
 								`;
-                        } else {
-                            mainDiv.innerHTML = `
+                    } else {
+                        mainDiv.innerHTML = `
 								<p class="meta" >You <span> ${data.date}</span></p>
 								<p class="text" style="color:gray;" id="${data.id}"><i>${msgData}</i></p>
 							`;
-                        }
-                        document
-                            .querySelector(".chat-messages")
-                            .appendChild(mainDiv);
-                    } else {
-                        mainDiv.classList.add("message_received");
-                        if (data.status == 1) {
-                            mainDiv.innerHTML = `
+                    }
+                    document
+                        .querySelector(".chat-messages")
+                        .appendChild(mainDiv);
+                } else {
+                    mainDiv.classList.add("message_received");
+                    if (data.status == 1) {
+                        mainDiv.innerHTML = `
 								<p class="meta" >${data.user_name} <span> ${data.date}</span></p>
 								<p class="text" id="${data.id}">${msgData}</p>  
 							`;
-                        } else {
-                            mainDiv.innerHTML = `
+                    } else {
+                        mainDiv.innerHTML = `
 								<p class="meta" > ${data.user_name} <span> ${data.date}</span></p>
 								<p class="text" style="color:gray;" id="${data.id}"><i>${msgData}</i></p>
 							`;
-                        }
-                        document
-                            .querySelector(".chat-messages")
-                            .appendChild(mainDiv);
                     }
+                    document
+                        .querySelector(".chat-messages")
+                        .appendChild(mainDiv);
                 }
             }
         }

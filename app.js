@@ -52,7 +52,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("delete", async (id) => {
-        // console.log("dellete",id)
+        // console.log("delete", id);
         try {
             // const room = await get_room_by_uid(id)
             // console.log(room[0].room)
@@ -64,9 +64,8 @@ io.on("connection", (socket) => {
                 message: "message was deleted",
                 id: id,
             });
-
             const del = await delete_Msg_db(id);
-            // console.log(del)
+            // console.log("delete", del);
         } catch (e) {
             console.log(new Date().toString(), " : ", e);
         }

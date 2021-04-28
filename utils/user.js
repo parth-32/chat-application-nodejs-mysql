@@ -1,3 +1,4 @@
+const { json } = require("body-parser");
 const pool = require("../config/db.config");
 
 function userJoin(id, username, room) {
@@ -33,13 +34,18 @@ function getUserDetailByName(name) {
 
 function delete_Msg_db(id) {
     return new Promise((resolve, reject) => {
-        pool.query("CALL deleteMsg(?)", [id], (err, rows) => {
-            if (err) {
-                return reject(err);
-            } else {
-                return resolve(rows);
+        pool.query(
+            "UPDATE chat SET message='message was deleted',status=0 WHERE id IN (?)",
+            [id],
+            (err, rows) => {
+                // pool.query("CALL deleteMsg(?)", [id], (err, rows) => {
+                if (err) {
+                    return reject(err);
+                } else {
+                    return resolve(rows);
+                }
             }
-        });
+        );
     });
 }
 function get_room_by_uid(id) {
